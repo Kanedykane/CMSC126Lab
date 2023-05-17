@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Genshin Impact</title>
+	<style>
+		/* Style for the page title */
+		h1 {
+			text-align: center;
+			font-size: 2.5rem;
+			margin-top: 2rem;
+			color: white;
+		}
+
+		body {
+			background-color: black;
+		}
+
+		/* Style for the container of character information */
+		#name {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 2rem;
+			margin-top: 2rem;
+		}
+
+		/* Style for each character information */
+		.character-info {
+			width: 300px;
+			background-size: cover;
+			background-position: center;
+			padding: 1rem;
+			border-radius: 0.5rem;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+			cursor: pointer;
+		}
+
+		/* Style for the character image */
+		.character-info img {
+			width: 100%;
+			border-radius: 0.5rem;
+		}
+
+		/* Style for the character name */
+		.character-info p:first-of-type {
+			font-size: 1.5rem;
+			font-weight: bold;
+			margin-top: 1rem;
+		}
+
+		/* Style for the character vision */
+		.character-info p:nth-of-type(2) {
+			font-size: 1.2rem;
+			margin-top: 0.5rem;
+		}
+
+		/* Style for the skill talents list */
+		.character-info ul {
+			margin-top: 1rem;
+			padding-left: 1rem;
+		}
+
+		/* Style for the skill talent item */
+		.character-info li {
+			margin-top: 0.5rem;
+		}
+
+		/* Style for the footer */
+		footer {
+			text-align: center;
+			margin-top: 2rem;
+			font-size: 0.8rem;
+			color: #666;
+		}
+
+		/* Hide the character vision and skill talents initially */
+		.character-info p:nth-of-type(2),
+		.character-info ul {
+			display: none;
+		}
+
+		/* Show the character vision and skill talents on hover */
+		.character-info:hover p:nth-of-type(2),
+		.character-info:hover ul {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<h1>GENSHIN IMPACT GALLERY</h1>
+	<div id="name"></div> 
+	<footer>
+			<p>© 2023 Genshin Impact Gallery. All rights reserved.</p>
+	</footer>
+
+	<script>
+		// Define an asynchronous function to fetch character data
+		async function fetchCharacterData() {
+			try {
+				// Send a request to fetch the list of characters
+				const response = await fetch('https://api.genshin.dev/characters');
+				// Parse the response as JSON and assign it to the 'characters' variable
+				const characters = await response.json();
+
+				// Get the HTML element where the character names will be displayed
+				const nameElement = document.getElementById('name');
+
+				// Iterate over each character in the list
+				for (const character of characters) {
+					// Send a request to fetch the data for the current character
+					const characterData = await fetch(`https://api.genshin.dev/characters/${character}`);
+					// Parse the response as JSON and extract the name, vision, and skill talents
+					const { name, vision, skillTalents } = await characterData.json();
+
+
+					// Create a new HTML element to display the character information
+					const characterInfo = document.createElement('div');
+					characterInfo.classList.add('character-info');
+					characterInfo.setAttribute('data-vision', vision);
+
+					// set background image
+					const backgroundUrl = `images/bg/${vision}.jpg`;
+					characterInfo.style.backgroundImage = `url(${backgroundUrl})`;
+
+					characterInfo.innerHTML = `
+						<img src="images/${name}.jpg" alt="${name}">
+						
+						<p>${name}</p>
+						<p><strong>Vision:</strong> ${vision}</p>
+						<p><strong>Skill Talents:</strong></p>
+						<ul>
+							${skillTalents.map(talent => `<li>${talent.name}: ${talent.description}</li>`).join('')}
+						</ul>
+						<hr>
+					`;
+
+
+					// Append the character information to the 'nameElement' div
+					nameElement.appendChild(characterInfo);
+
+					// Log the character's name to the console
+					console.log('Character:', name);
+					// Log the character's vision to the console
+					console.log('Vision:', vision);
+					// Log the character's skill talents to the console
+					console.log('Skill Talents:', skillTalents);
+					// Add a separator in the console between each character's information
+					console.log('-----------------------------');
+				}
+
+			} catch (error) {
+				// If an error occurs during the fetching process, log an error message
+			console.error('Error fetching character data:', error);
+		}
+	}
+
+	// Call the fetchCharacterData function to start fetching the character data
+	fetchCharacterData();
+	</script>
+</body>
+</html>
